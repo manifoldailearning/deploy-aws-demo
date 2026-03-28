@@ -49,3 +49,68 @@ In GitHub: **Settings** → **Secrets and variables** → **Actions** → **New 
 | `K8S_NAMESPACE` | Must match manifests: `support-ops-agent`. |
 
 The workflow `.github/workflows/deploy.yml` reads these names exactly.
+
+### 4 Enable IAM roles for service accounts (IRSA)
+
+Your pods need AWS permissions for **Secrets Manager** and (if enabled) **CloudWatch Logs**. EKS uses **IRSA**.
+
+Create the OIDC provider if it does not exist (eksctl often does this automatically; if not):
+
+```bash
+eksctl utils associate-iam-oidc-provider --cluster "support-ops-demo" --region "us-east-1" --approve
+```
+
+###  5 Create the Policy:
+``bash
+aws iam create-policy \
+  --policy-name support-ops-agent-irsa-policy \
+  --policy-document file://irsa-support-ops-agent-policy.json
+
+```
+
+###  5 Create the Policy:
+
+```bash
+ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+```
+
+Get OIDC issuer :
+```bash
+aws eks describe-cluster \
+  --name support-ops-demo \
+  --region us-east-1 \
+  --query "cluster.identity.oidc.issuer" \
+  --output text | sed 's#^https://##'
+
+```
+
+Get he IODC Provider and maintain the draft_irsa-trust-policy copy.json 
+
+Create IAM Role:
+```bash
+aws iam create-role \
+  --role-name support-ops-agent-irsa-role \
+  --assume-role-policy-document file://irsa-trust-policy.json
+```
+
+```bash
+aws iam attach-role-policy \
+  --role-name support-ops-agent-irsa-role \
+  --policy-arn arn:aws:iam::074388197187:policy/support-ops-agent-irsa-policy
+```
+
+Get the Role ARN:
+```
+aws iam get-role \
+  --role-name support-ops-agent-irsa-role \
+  --query "Role.Arn" \
+  --output text
+```
+
+ARN Output --> arn:aws:iam::074388197187:role/support-ops-agent-irsa-role
+
+### Annotate the Kubernetes ServiceAccount
+Edit deployment/k8s/serviceaccount.yaml , and update the Account id & ARN there,
+
+Run the following command:
+kubectl apply -f deployment/k8s/serviceaccount.yaml
