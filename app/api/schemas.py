@@ -45,6 +45,8 @@ class ConfigCheckResponse(BaseModel):
     cloudwatch_enabled: bool
     aws_region: str
     secret_provider_type: str
+    demo_scenarios_enabled: bool = False
+    demo_slow_tool_delay_seconds: float = 0.0
 
 
 class MetricsSummaryResponse(BaseModel):
@@ -55,3 +57,20 @@ class MetricsSummaryResponse(BaseModel):
     failure_count: int
     average_latency_ms: float
     agent_invocation_count: int
+
+
+class GoldenCaseItem(BaseModel):
+    """One row from the teaching golden dataset."""
+
+    id: str
+    user_query: str
+    expected_classification: str
+    tags: list[str] = Field(default_factory=list)
+
+
+class GoldenDatasetResponse(BaseModel):
+    """Versioned golden examples for regression demos (no secrets)."""
+
+    version: str
+    description: str
+    cases: list[GoldenCaseItem]

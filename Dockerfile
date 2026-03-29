@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 FROM python:3.11.9-slim-bookworm AS base
 
-ENV PYTHONDONTWRITEBYTECODE=1 \ 
+ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1
@@ -15,6 +15,8 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY app ./app
+# Golden dataset for GET /demo/golden-dataset (path resolves to WORKDIR/data/... at runtime)
+COPY data ./data
 
 USER 10001
 

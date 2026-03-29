@@ -84,7 +84,7 @@ aws eks describe-cluster \
 
 ```
 
-Get he IODC Provider and maintain the draft_irsa-trust-policy copy.json 
+Get the IODC Provider and maintain the draft_irsa-trust-policy copy.json 
 
 Create IAM Role:
 ```bash
@@ -114,3 +114,12 @@ Edit deployment/k8s/serviceaccount.yaml , and update the Account id & ARN there,
 
 Run the following command:
 kubectl apply -f deployment/k8s/serviceaccount.yaml
+
+```bash
+kubectl get po -n support-ops-agent
+```
+
+```
+eksctl delete cluster --name=support-ops-demo
+
+```

@@ -38,8 +38,37 @@ class Settings(BaseSettings):
         default=False,
         description="If true, also emit logs to CloudWatch via watchtower",
     )
+    enable_langchain_trace_logs: bool = Field(
+        default=False,
+        description="If true, attach LangChain trace callback (structured logs → stdout / CloudWatch)",
+    )
     redis_url: str | None = Field(default=None, description="Optional Redis URL for future cache")
     request_timeout_seconds: float = Field(default=120.0, description="Upstream request timeout")
+
+    agent_io_log_max_chars: int = Field(
+        default=4000,
+        ge=0,
+        description="Max characters per logged field (user query, LLM text, draft reply) for troubleshooting",
+    )
+
+    enable_demo_scenarios: bool = Field(
+        default=False,
+        description="If true, allow demo substrings in user_query to simulate policy tool failure or delay",
+    )
+    demo_tool_failure_substring: str = Field(
+        default="[demo:tool-failure]",
+        description="If present in user_query (case-insensitive), policy_lookup raises after logging",
+    )
+    demo_slow_tool_substring: str = Field(
+        default="[demo:slow-tool]",
+        description="If present in user_query (case-insensitive), policy_lookup sleeps before the tool runs",
+    )
+    demo_slow_tool_delay_seconds: float = Field(
+        default=12.0,
+        ge=0.0,
+        le=120.0,
+        description="Sleep duration for slow-tool demo (capped for safety)",
+    )
 
     secrets_source: Literal["auto", "env", "aws_secrets_manager"] = Field(
         default="auto",
