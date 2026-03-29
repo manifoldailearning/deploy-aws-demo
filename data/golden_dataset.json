@@ -5,13 +5,13 @@
     {
       "id": "deferment-001",
       "user_query": "A learner wants to defer to the next cohort because of timing issues with their current job.",
-      "expected_classification": "deferment_request",
+      "expected_classification": "deferment_requests",
       "tags": ["deferment", "happy-path"]
     },
     {
       "id": "access-001",
       "user_query": "I cannot log into the learning portal; it says my account is locked after too many attempts.",
-      "expected_classification": "access_issue",
+      "expected_classification": "access_issues",
       "tags": ["access", "login"]
     },
     {

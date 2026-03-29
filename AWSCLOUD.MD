@@ -123,3 +123,13 @@ kubectl get po -n support-ops-agent
 eksctl delete cluster --name=support-ops-demo
 
 ```
+
+## Reach the API from your laptop (class demo curls)
+
+The Service is **ClusterIP** (`deployment/k8s/service.yaml`), so nothing is public by default. Use **port-forward** in one terminal and run the commands below in another.
+
+**Terminal A — port forward (leave running):**
+
+```bash
+kubectl port-forward -n support-ops-agent svc/support-ops-agent 8000:80
+```
